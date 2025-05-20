@@ -9,7 +9,7 @@ use sha2::Sha512;
 
 use rand_core::{CryptoRng, OsRng};
 
-struct Transcript {
+pub struct Transcript {
     u: RistrettoPoint,
     c: Scalar,
     z: Scalar,
@@ -24,7 +24,7 @@ fn bytes(g: &RistrettoPoint, h: &RistrettoPoint, u: &RistrettoPoint) -> Vec<u8> 
     .concat()
 }
 
-fn prove(g: &RistrettoBasepointTable, x: &Scalar, h: &RistrettoPoint) -> Transcript {
+pub fn prove(g: &RistrettoBasepointTable, x: &Scalar, h: &RistrettoPoint) -> Transcript {
     let mut csprng = OsRng;
     let r = Scalar::random(&mut csprng);
     let u = &r * g;
@@ -33,7 +33,7 @@ fn prove(g: &RistrettoBasepointTable, x: &Scalar, h: &RistrettoPoint) -> Transcr
     Transcript { u, c, z }
 }
 
-fn verify(g: &RistrettoBasepointTable, h: &RistrettoPoint, t: &Transcript) -> bool {
+pub fn verify(g: &RistrettoBasepointTable, h: &RistrettoPoint, t: &Transcript) -> bool {
     let c = Scalar::hash_from_bytes::<Sha512>(&bytes(&g.basepoint(), h, &t.u));
     c == t.c && g * &t.z == t.u + h * c
 }
